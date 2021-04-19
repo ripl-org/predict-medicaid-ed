@@ -1,0 +1,5 @@
+exec(compile(open("./source/lib/SCons/logging.py").read(), "./source/lib/SCons/logging.py", 'exec'))
+exec(compile(open("./source/lib/SCons/env.py").read(), "./source/lib/SCons/env.py", 'exec'))
+exec(compile(open("./source/lib/SCons/misc.py").read(), "./source/lib/SCons/misc.py", 'exec'))
+exec(compile(open("./source/lib/SCons/builders.py").read(), "./source/lib/SCons/builders.py", 'exec'))
+exec(compile(open("./source/lib/SCons/sql_table_node.py").read(), "./source/lib/SCons/sql_table_node.py", 'exec'))

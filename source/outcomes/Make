@@ -1,0 +1,26 @@
+Import("*")
+
+tables["ed_claims"] = SQLTable("{}_ed_claims".format(env.PROJECT_KEY))
+
+env.Python(tables["ed_claims"],
+           ["ed_claims.py",
+            tables["claims_dedup"],
+            tables["rev_cde"],
+            tables["mn_rev_cde"],
+            tables["proc_cde"],
+            tables["mn_proc_cde"]])
+
+tables["outcomes"] = SQLTable("{}_outcomes".format(env.PROJECT_KEY))
+
+env.Python([tables["outcomes"],
+            "#scratch/outcomes.csv"],
+           ["outcomes.py",
+            tables["population"],
+            tables["lookback"],
+            tables["lookahead"],
+            tables["dim_date"],
+            tables["ed_claims"]])
+
+Export("tables")
+
+# vim: syntax=python expandtab sw=4 ts=4

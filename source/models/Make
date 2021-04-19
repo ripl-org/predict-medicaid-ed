@@ -1,0 +1,125 @@
+Import("*")
+
+# model matrix
+env.R(["#scratch/models/matrix.RData",
+       "#output/models/means.csv"],
+      ["matrix.R",
+       "#scratch/outcomes.csv"] + features)
+env.R(["#scratch/models/X.train.mm",
+       "#scratch/models/X.validate.mm",
+       "#scratch/models/X.test.mm",
+       "#scratch/models/y.train.csv",
+       "#scratch/models/y.validate.csv",
+       "#scratch/models/y.test.csv",
+       "#scratch/models/colnames.csv"],
+      ["dump-matrix.R",
+       "#scratch/models/matrix.RData"])
+
+env.Command("#output/models/basic.selected.csv",
+            "basic.selected.csv",
+            "cp $SOURCE $TARGET")
+
+for regression in ("emergence", "spending"):
+
+    # basic models
+    env.R(["#output/models/basic.{}.coef.csv".format(regression),
+           "#output/models/basic.{}.residuals.csv".format(regression),
+           "#output/models/basic.{}.predict.validate.csv".format(regression),
+           "#output/models/basic.{}.predict.test.csv".format(regression)],
+          ["glm-{}.R".format(regression),
+           constants["RANDOM_SEED"],
+           "#scratch/models/matrix.RData",
+           "#output/models/basic.selected.csv"],
+          log_path="#output/models/basic.{}.log".format(regression))
+
+    # bootstrapped lasso models
+    for i in range(env.LASSO_BOOTSTRAPS):
+        env.R(["#output/models/lasso.{}.{}.coef.csv".format(regression, i),
+               "#output/models/lasso.{}.{}.predict.csv".format(regression, i)],
+              ["lasso-{}.R".format(regression),
+               constants["RANDOM_SEED"],
+               Value(i),
+               "#scratch/models/matrix.RData"],
+              log_path="#output/models/lasso.{}.{}.log".format(regression, i))
+    env.Python(["#output/models/lasso.{}.bootstrap.freq.csv".format(regression),
+                "#output/models/postlasso.{}.selected.csv".format(regression)],
+               ["lasso-frequency.py", "#output/features/manifest.tsv"] + \
+               ["#output/models/lasso.{}.{}.coef.csv".format(regression, i) 
+                for i in range(env.LASSO_BOOTSTRAPS)],
+               log_path="#output/models/lasso-frequency.{}.log".format(regression))
+    env.Python(["#output/models/lasso.{}.predict.test.csv".format(regression)],
+               ["lasso-ensemble.py"] + \
+               ["#output/models/lasso.{}.{}.predict.csv".format(regression, i)
+                for i in range(env.LASSO_BOOTSTRAPS)],
+               log_path="#output/models/lasso-ensemble.{}.log".format(regression))
+
+    # residual plots
+    env.Python(["#output/models/basic.{}.residuals.pdf".format(regression)],
+               ["residuals.py",
+                "#output/models/basic.{}.residuals.csv".format(regression)],
+               log_path="#output/models/basic.{}.residuals.log".format(regression))
+    env.Python(["#output/models/postlasso.{}.residuals.pdf".format(regression)],
+               ["residuals.py",
+                "#output/models/postlasso.{}.residuals.csv".format(regression)],
+               log_path="#output/models/postlasso.{}.residuals.log".format(regression))
+
+# pool selected LASSO variables
+env.Command(["#output/models/postlasso.selected.csv"],
+            ["#output/models/postlasso.emergence.selected.csv",
+             "#output/models/postlasso.spending.selected.csv"],
+            "echo var > $TARGET && sort -u $SOURCES | grep -v var >> $TARGET")
+env.R(["#output/models/postlasso.corr.csv"],
+      ["corr.R",
+       "#scratch/models/matrix.RData",
+       "#output/models/postlasso.selected.csv"],
+      log_path="#output/models/postlasso.corr.log")
+
+# post-LASSO models
+for regression in ("emergence", "spending"):
+    env.R(["#output/models/postlasso.{}.coef.csv".format(regression),
+           "#output/models/postlasso.{}.residuals.csv".format(regression),
+           "#output/models/postlasso.{}.predict.validate.csv".format(regression),
+           "#output/models/postlasso.{}.predict.test.csv".format(regression)],
+          ["glm-{}.R".format(regression),
+           constants["RANDOM_SEED"],
+           "#scratch/models/matrix.RData",
+           "#output/models/postlasso.selected.csv"],
+          log_path="#output/models/postlasso.{}.log".format(regression))
+
+for model in ("basic", "postlasso", "lasso"):
+
+    # combine predictions
+    for subset in ("validate", "test"):
+        if subset == "validate" and model == "lasso": continue
+        env.Python(["#output/models/{}.combined.predict.{}.csv".format(model, subset)],
+                   ["combine-predict.py",
+                    "#output/models/{}.emergence.predict.{}.csv".format(model, subset),
+                    "#output/models/{}.spending.predict.{}.csv".format(model, subset)],
+                   log_path="#output/models/{}.combined.predict.{}.log".format(model, subset))
+
+for model in ("basic", "postlasso"):
+
+    # bootstrap glm models to estimate CI for combined coefficients
+    for regression in ("emergence", "spending"):
+        for i in range(env.PLOT_BOOTSTRAPS):
+            env.R(["#output/models/{}.{}.{}.coef.csv".format(model, regression, i)],
+                  ["glm-{}-bootstrap.R".format(regression),
+                   constants["RANDOM_SEED"],
+                   Value(i),
+                   "#scratch/models/matrix.RData",
+                   "#output/models/{}.selected.csv".format(model)],
+                  log_path="#output/models/{}.{}.{}.log".format(model, regression, i))
+
+    # combined coefficients
+    env.Python(["#output/models/{}.combined.coef.csv".format(model)],
+               ["combine-coef.py",
+                "#output/models/means.csv",
+                "#output/models/{}.emergence.coef.csv".format(model),
+                "#output/models/{}.spending.coef.csv".format(model)] + \
+               ["#output/models/{}.emergence.{}.coef.csv".format(model, i)
+                for i in range(env.PLOT_BOOTSTRAPS)] + \
+               ["#output/models/{}.spending.{}.coef.csv".format(model, i)
+                for i in range(env.PLOT_BOOTSTRAPS)],
+               log_path="#output/models/{}.combined.coef.log".format(model))
+
+# vim: syntax=python expandtab sw=4 ts=4

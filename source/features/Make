@@ -1,0 +1,163 @@
+Import('*')
+
+features = []
+feature_manifests = []
+interact_manifests = []
+
+no_norm = frozenset(("Medicaid/diag_cde", "Medicaid/pharmacy"))
+
+def Feature(name, deps, *args):
+    """
+    Helper function for succinctly specifying a feature file and
+    its arguments.
+    """
+    env.Python(["#scratch/features/{}.csv".format(name),
+                "#output/features/{}.manifest".format(name)], 
+               ["{}.py".format(name)] + [tables[name] for name in deps] + list(args))
+    if name in no_norm:
+        features.append("#scratch/features/{}.csv".format(name))
+    else:
+        env.Python("#scratch/features/{}.normalized.csv".format(name),
+                   ["normalize.py", "#scratch/population.csv", "#scratch/features/{}.csv".format(name)],
+                   log_path="#output/features/{}.normalize.log".format(name))
+        features.append("#scratch/features/{}.normalized.csv".format(name))
+    feature_manifests.append("#output/features/{}.manifest".format(name))
+
+def Interact(name, deps, set1, set2):
+    """
+    Helper function for specifying pairwise interactions between two
+    sets of features.
+    """
+    name = "interactions/{}".format(name)
+    env.Python(["#scratch/features/{}.csv".format(name),
+                "#output/features/{}.manifest".format(name)],
+               ["interact.py",
+                tables["population"],
+                Value(",".join(set1)),
+                Value(",".join(set2)),
+                "#output/features/feature_manifest.tsv"] + \
+               ["#scratch/features/{}.normalized.csv".format(name) for name in deps],
+               log_path="#output/features/{}.log".format(name))
+    features.append("#scratch/features/{}.csv".format(name))
+    interact_manifests.append("#output/features/{}.manifest".format(name))
+
+def InteractAll(name, dep1, deps2):
+    """
+    Helper function for specifying pairwise interactions between all
+    features in one file and all features in a set of other files.
+    """
+    name = "interactions/{}".format(name)
+    env.Python(["#scratch/features/{}.csv".format(name),
+                "#output/features/{}.manifest".format(name)],
+               ["interact-all.py",
+                tables["population"],
+                "#output/features/feature_manifest.tsv",
+                "#scratch/features/{}.normalized.csv".format(dep1)] + \
+               ["#scratch/features/{}.normalized.csv".format(name) for name in deps2],
+               log_path="#output/features/{}.log".format(name))
+    features.append("#scratch/features/{}.csv".format(name))
+    interact_manifests.append("#output/features/{}.manifest".format(name))
+
+
+# Features
+
+Feature("DLT/naics",
+        ["population", "dlt_wage"])
+Feature("DLT/tdi",
+        ["population", "lookback", "dim_date", "dlt_tdi"],
+        "#public-data/ICD-9/icd9-sections.csv")
+Feature("DLT/ui",
+        ["population", "lookback", "dim_date", "dlt_ui_payments"])
+Feature("DLT/unemp_naics",
+        ["population", "dlt_wage"],
+        "#input/public/nat_naics_unemp.csv")
+Feature("DLT/unemp_ri",
+        ["population", "lookback", "ri_month_unemp"])
+Feature("DLT/wages",
+        ["population", "dlt_wage"])
+Feature("DOC/events",
+        ["population", "lookback", "dim_date", "doc_events"])
+Feature("DOC/sentences",
+        ["population", "lookback", "dim_date", "doc_sentences"])
+Feature("Medicaid/costs",
+        ["population", "lookback", "dim_date", "medicaid_enrollment_2", "claims_dedup"])
+Feature("Medicaid/costs_ed",
+        ["population", "lookback", "dim_date", "medicaid_enrollment_2", "ed_claims"])
+Feature("Medicaid/costs_pharmacy",
+        ["population", "lookback", "dim_date", "medicaid_enrollment_2", "medicaid_pharmacy"])
+Feature("Medicaid/diag_cde",
+        ["population", "lookback", "dim_date", "diag_cde"],
+        "#public-data/ICD-9/icd9-sections.csv")
+Feature("Medicaid/demographics",
+        ["population", "lookback", "medicaid_enrollment_2", "eohhs_recip_demo"])
+Feature("Medicaid/enrollment",
+        ["population", "lookback", "medicaid_enrollment_2", "dim_aid_ctg_cde", "eohhs_recip_x_ssn"])
+Feature("Medicaid/pharmacy",
+        ["population", "lookback", "dim_date", "medicaid_pharmacy", "ashp"])
+Feature("Medicaid/proc_cde",
+        ["population", "lookback", "dim_date", "proc_cde", "hcpcs"],
+        "#public-data/cpt-sections.csv")
+Feature("Medicaid/rev_cde",
+        ["population", "lookback", "dim_date", "claims_dedup", "rev_cde"],
+        "#public-data/rev-cde-sections.csv")
+Feature("Medicaid/risk_scores",
+        ["population", "lookback", "dim_date", "diag_cde", "proc_cde"],
+        "#public-data/CCS/single_level_dxref_2015.csv",
+        "#public-data/CCI/cci2015.csv")
+Feature("Mega/census",
+        ["population", "lookback", "address"],
+        "#input/public/ACS_15_5YR_B19013_with_ann.csv",
+        "#input/public/ACS_15_5YR_B17010_with_ann.csv")
+Feature("Mega/births",
+        ["population", "lookback", "mega_demo"])
+Feature("Mega/demographics",
+        ["population", "lookback", "mega_demo"])
+Feature("Mega/payments",
+        ["population", "lookback", "mega_pay"])
+
+# Feature Manifest
+
+env.Command("#output/features/feature_manifest.tsv",
+            feature_manifests,
+            "cat $SOURCES > $TARGET")
+
+# Interactions
+
+Interact("age_x_race",
+         ["Mega/demographics"],
+         ["AGE_{}".format(i) for i in range(1, 7)],
+         ["RACE_BLACK", "RACE_HISPANIC", "RACE_OTHER", "RACE_MISSING"])
+Interact("age_x_sex",
+         ["Medicaid/demographics", "Mega/demographics"],
+         ["AGE_{}".format(i) for i in range(1, 7)],
+         ["SEX_M"])
+Interact("race_x_sex",
+         ["Medicaid/demographics", "Mega/demographics"],
+         ["RACE_BLACK", "RACE_HISPANIC", "RACE_OTHER", "RACE_MISSING"],
+         ["SEX_M"])
+
+InteractAll("census_x_demo",
+            "Mega/census",
+            ["Medicaid/demographics", "Mega/demographics"])
+InteractAll("payments_x_all",
+            "Mega/payments",
+            ["DLT/unemp_ri", "DLT/unemp_naics", "DLT/ui", "DLT/wages", "DOC/events",
+             "Medicaid/costs", "Medicaid/costs_ed", "Medicaid/costs_pharmacy",
+             "Medicaid/demographics", "Medicaid/enrollment",
+             "Mega/births", "Mega/census", "Mega/demographics"])
+InteractAll("risk_scores_x_all",
+            "Medicaid/risk_scores",
+            ["DLT/unemp_ri", "DLT/unemp_naics", "DLT/ui", "DLT/wages", "DOC/events",
+             "Medicaid/costs", "Medicaid/costs_ed", "Medicaid/costs_pharmacy",
+             "Medicaid/demographics", "Medicaid/enrollment",
+             "Mega/births", "Mega/census", "Mega/demographics", "Mega/payments"])
+
+# Final Manifest
+
+env.Command(["#output/features/manifest.tsv"],
+            ["#output/features/feature_manifest.tsv"] + interact_manifests,
+            "cat $SOURCES > $TARGET")
+
+Export("features")
+
+# vim: syntax=python expandtab sw=4 ts=4

@@ -1,0 +1,31 @@
+Import("*")
+
+# Table 1 - baseline characteristics
+env.Python(["#output/tables/Table1.csv"],
+           ["Table1.py", 
+            tables["outcomes"],
+            tables["population"],
+            tables["lookback"],
+            tables["mega_demo"],
+            Value("TEST"),
+            "#scratch/features/Medicaid/costs.csv",
+            "#scratch/features/Medicaid/costs_pharmacy.csv",
+            "#scratch/features/Medicaid/demographics.csv",
+            "#scratch/features/Medicaid/enrollment.csv",
+            "#scratch/features/Medicaid/proc_cde.csv",
+            "#scratch/features/Medicaid/risk_scores.csv",
+            "#scratch/features/Mega/census.csv",
+            "#scratch/features/Mega/demographics.csv",
+            "#scratch/features/Mega/payments.csv"])
+ 
+# Table A2/A3 - regression summaries
+env.Python(["#output/tables/TableA2.tex"],
+           ["regression-summary.py",
+            "#output/models/basic.combined.coef.csv",
+            "#output/features/manifest.tsv"])
+env.Python(["#output/tables/TableA3.tex"],
+           ["regression-summary.py",
+            "#output/models/postlasso.combined.coef.csv",
+            "#output/features/manifest.tsv"])
+  
+# vim: syntax=python expandtab sw=4 ts=4

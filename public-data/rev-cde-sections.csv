@@ -1,0 +1,91 @@
+REV_CDE,DESCRIPTION
+010,Room and Board - All-inclusive
+011,Room and Board - Private
+012,Room and Board - Semiprivate
+013,Room and Board - 3 to 4 Beds
+014,Room and Board - Deluxe Private
+015,Room and Board - Ward
+016,Room and Board - Other
+017,Nursery
+018,Leave of Absence
+019,Subacute Care
+020,Intensive Care Unit
+021,Coronary Care Unit
+022,Special Charges
+023,Incremental Nursing Charge
+024,All-inclusive Ancillary
+025,Pharmacy
+026,IV Therapy
+027,Medical/Surgical Supplies and Devices
+028,Oncology
+029,Durable Medical Equipment
+030,Laboratory
+031,Laboratory Pathology
+032,Radiology Diagnostic
+033,Radiology Therapeutic and/or Chemotherapy
+034,Nuclear Medicine
+035,CT Scan
+036,Operating Room
+037,Anesthesia
+038,Blood and Blood Products
+039,Blood and Blood Components
+040,Other Imaging Services
+041,Respiratory Services
+042,Physical Therapy
+043,Occupational Therapy
+044,Speech Therapy
+045,Emergency Room
+046,Pulmonary Function
+047,Audiology
+048,Cardiology
+049,Ambulatory Surgical Care
+050,Outpatient Services
+051,Clinic
+052,Freestanding Clinic
+053,Osteopathic Services
+054,Ambulance
+055,Skilled Nursing
+056,Home Health
+057,Home Health - Aide
+058,Home Health - Other
+059,Home Health - Units
+060,Home Health - Oxygen
+061,Magnetic Resonance Technology
+062,Medical/Surgical Supplies
+063,Pharmacy
+064,Home IV Therapy
+065,Hospice 
+066,Respite Care
+067,Outpatient Special Residence
+068,Trauma Response
+070,Cast Room
+071,Recovery Room
+072,Labor Room/Delivery
+073,Electrocardiogram
+074,Electroencephalogram
+075,Gastrointestinal Services
+076,Specialty Services
+077,Preventive Services
+078,Telemedicine
+079,Lithotripsy
+080,Inpatient Renal Dialysis
+081,Acquisition of Body Components
+082,Hemodialysis
+083,Peritoneal Dialysis
+084,Continuous Ambulatory Peritoneal Dialysis
+085,Continuous Cycling Peritoneal Dialysis
+086,Magnetoencephalography
+088,Miscellaneous Dialysis
+090,Behavioral Health
+091,Behavioral Health
+092,Other Diagnostic Services
+093,Medical Rehabilitation Day Program
+094,Other Therapeutic Services
+095,Other Therapeutic Services
+096,Professional Fees
+097,Professional Fees
+098,Professional Fees
+099,Patient Convenience Items
+100,Behavioral Health Accommodations
+210,Alternative Therapy
+310,Adult Care

@@ -1,0 +1,125 @@
+START,END,SECTION,DESCRIPTION
+99201,99215,EM1,Office outpatient visit
+99217,99220,EM2,Hospital observation
+99221,99239,EM3,Hospital inpatient visit
+99241,99255,EM4,Consultation
+99281,99288,EM5,Emergency department
+99291,99292,EM6,Critical care
+99301,99318,EM7,Nursing facility care
+99321,99340,EM8,Rest home care
+99341,99353,EM10,Home visit
+99354,99360,EM11,Prolonged services
+99361,99362,EM12,Medical team conference
+99366,99368,EM12,Medical team conference
+99371,99373,EM15,Non-face-to-face physician
+99374,99378,EM13,Hospice case
+99379,99380,EM7,Nursing facility care
+99381,99429,EM14,Preventive medicine
+99440,99440,EM17,Newborn care
+99441,99444,EM15,Non-face-to-face physician
+99450,99456,EM16,Disability evaluation
+99460,99465,EM17,Newborn care
+99466,99480,EM18,Inpatient neonatal intensive care
+99487,99494,EM19,Complex chronic care coordination
+99495,99496,EM20,Transitional care management
+99499,99499,EM21,Other evaluation and management
+00100,00222,A1,Anesthesia: head
+00300,00352,A2,Anesthesia: neck
+00400,00474,A3,Anesthesia: thorax
+00500,00580,A4,Anesthesia: intrathoracic
+00600,00670,A5,Anesthesia: spine and spinal cord
+00700,00797,A6,Anesthesia: upper abdomen
+00800,00882,A7,Anesthesia: lower abdomen
+00902,00952,A8,Anesthesia: perineum
+01112,01190,A9,Anesthesia: pelvis (except hip)
+01200,01274,A10,Anesthesia: upper leg (except knee)
+01320,01444,A11,Anesthesia: knee and popliteal area
+01462,01522,A12,Anesthesia: lower leg (below knee)
+01610,01682,A13,Anesthesia: shoulder and axillary
+01710,01782,A14,Anesthesia: upper arm and elbow
+01810,01860,A15,"Anesthesia: forearm, wrist and hand"
+01916,01936,A16,Anesthesia: radiological procedures
+01951,01953,A17,Anesthesia: burn excisions or debridement
+01958,01969,A18,Anesthesia: obstetric
+01990,01999,A19,Anesthesia: other
+99100,99140,A20,Anesthesia: qualifying circumstances
+99143,99150,A21,Anesthesia: moderate (conscious) sedation
+10040,19499,S1,Surgery: integumentary system
+20000,29999,S2,Surgery: musculoskeletal system
+30000,32999,S3,Surgery: respiratory system
+33010,37799,S4,Surgery: cardiovascular system
+38100,38999,S5,Surgery: hemic and lymphatic systems
+39000,39599,S6,Surgery: mediastinum and diaphragm
+40490,49999,S7,Surgery: digestive system
+50010,53899,S8,Surgery: urinary system
+54000,55899,S9,Surgery: male genital system
+55920,55980,S10,Surgery: reproductive system and intersex
+56405,58999,S11,Surgery: female genital system
+59000,59899,S12,Surgery: maternity care and delivery
+60000,60699,S13,Surgery: endocrine system
+61000,64999,S14,Surgery: nervous system
+65091,68899,S15,Surgery: eye and ocular adnexa
+69000,69979,S16,Surgery: auditory system
+70010,76499,R1,Diagnostic radiology
+76500,76999,R2,Diagnostic ultrasound
+77001,77032,R3,Radiologic guidance
+77051,77059,R4,Breast mammography
+77071,77084,R5,Bone/joint studies
+77261,77999,R6,Radiation oncology
+78000,79999,R7,Nuclear medicine
+80000,80076,PL1,Organ or disease-oriented panels
+80100,80103,PL2,Drug testing
+80150,80299,PL3,Therapeutic drug assays
+80400,80440,PL4,Evocative/suppression testing
+80500,80502,PL5,Consultations (clinical pathology)
+81000,81099,PL6,Urinalysis
+82000,84999,PL7,Diagnostic chemistry
+85002,85999,PL8,Hematology and coagulation
+86000,86849,PL9,Diagnostic immunology
+86850,86999,PL10,Transfusion medicine
+87001,87999,PL11,Microbiology
+88000,88099,PL12,Anatomic pathology (postmortem)
+88104,88199,PL13,Cytopathology
+88230,88299,PL14,Cytogenetic studies
+88300,88399,PL15,Surgical pathology
+88720,88741,PL16,On vivo (transcutaneous) lab procedures
+89049,89240,PL17,Other pathology or laboratory services
+89250,89398,PL18,Reproductive medicine
+90281,90399,M1,Immune globulins
+90460,90749,M2,Immunizations
+90791,90792,M3,Psychiatry
+90801,90899,M3,Psychiatry
+90901,90911,M4,Biofeedback
+90935,90999,M5,Dialysis
+91000,91299,M6,Gastroenterology
+92002,92700,M7,Ophthalmology and audiology
+92950,93799,M8,Cardiovascular
+93875,93990,M9,Noninvasive vascular diagnostic studies
+94002,94799,M10,Pulmonary medicine
+95004,95199,M11,Allergy and clinical immunology
+95250,95251,M12,Endocrinology
+95803,96020,M13,Neurology and neuromuscular procedures
+96101,96125,M14,Central nervous system assessments
+96150,96155,M15,Health and behavior assessments and interventions
+96360,96549,M16,Injections and infusions (including chemotherapy)
+96567,96571,M17,Photodynamic therapy
+96900,96999,M18,Special dermatological procedures
+97001,97799,M19,Physical medicine and rehabilitation
+97802,97804,M20,Medical nutrition therapy
+97810,97814,M21,Acupuncture
+98925,98929,M22,Osteopathic manipulative treatment
+98940,98943,M23,Chiropractic manipulative treatment
+98960,98962,M24,Education and training for patient self-management
+98966,98969,M25,Non-face-to-face nonphysician services
+99000,99091,M26,Other medical services
+99170,99199,M26,Other medical services
+99500,99602,M27,Home health medicine
+99605,99607,M28,Medication therapy management
+,,T1,Emergency transportation
+,,T2,Non-emergency transportation
+,,DME,Durable medical equipment
+,,S,Medical or surgical supplies
+,,EM22,Habilitation
+,,M30,Dental
+,,EM9,Case management
+,,M29,Substance use disorder treatment

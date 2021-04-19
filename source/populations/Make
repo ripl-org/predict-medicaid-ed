@@ -1,0 +1,32 @@
+Import("*")
+
+tables["lookback"] = SQLTable("{}_lookback".format(env.PROJECT_KEY))
+
+env.Python(tables["lookback"],
+           ["Load.py",
+            "lookback.xlsx"])
+
+tables["lookahead"] = SQLTable("{}_lookahead".format(env.PROJECT_KEY))
+
+env.Python(tables["lookahead"],
+           ["Load.py",
+            "lookahead.xlsx"])
+
+tables["population"] = SQLTable("{}_population".format(env.PROJECT_KEY))
+
+env.Python([tables["population"],
+            "#scratch/population.csv"],
+           ["population.py",
+            tables["medicaid_enrollment_2"],
+            tables["lookback"]])
+
+#env.Python([tables["first_ed_lookup"],
+#            tables["first_ed"]],
+#           ["FirstED.py",
+#            tables["population"],
+#            tables["outcome_any"],
+#            tables["ed_claims"]])
+
+Export("tables")
+
+# vim: syntax=python expandtab sw=4 ts=4

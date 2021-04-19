@@ -1,0 +1,31 @@
+Import("*")
+
+# Figure 1 - historical ED spending in RI
+env.Python("#output/figures/Figure1.csv",
+           ["Figure1.py",
+            tables["ed_claims"],
+            Value(2000),
+            Value(2014)])
+
+# Figure 2 - mean reversion
+env.Python(["#output/figures/Figure2.csv",
+            "#output/figures/Figure2.pdf"],
+           ["Figure2.py",
+            tables["ed_claims"]])
+
+# Figure 3 - cost capture
+for i, subset in enumerate(["validate", "test"]):
+    models = ["basic", "postlasso"]
+    if subset == "test": models.append("lasso")
+    env.Python(["#output/figures/Figure3.{}.csv".format(subset)],
+               ["Figure3.py",
+                constants["RANDOM_SEED"],
+                tables["population"],
+                Value(subset.upper()),
+                Value(2012+i),
+                tables["ed_claims"]] + \
+               ["#output/models/{}.combined.predict.{}.csv".format(model, subset)
+                for model in models],
+               log_path = "#output/figures/Figure3.{}.log".format(subset))
+
+# vim: syntax=python expandtab sw=4 ts=4
