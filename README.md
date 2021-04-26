@@ -1,6 +1,7 @@
 Analysis code to reproduce results from the manuscript:
 
-Hastings JS, Howison M. Predicting Divertible Medicaid Emergency Department Costs.
+Hastings JS, Howison M. 2021. Predicting Divertible Medicaid Emergency Department Costs.
+*OSF Preprints* [q36es](https://osf.io/q36es/). doi:[10.31219/osf.io/q36es](https://doi.org/10.31219/osf.io/q36es)
 
 ## Supplementary tables
 
